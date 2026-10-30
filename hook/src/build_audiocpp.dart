@@ -26,6 +26,19 @@ Future<void> buildAudioCpp(
   final options = HookOptions.fromInput(input);
   final backend = options.backend ?? defaultBackend(os, arch);
 
+  // audio.cpp is not 32-bit clean (and its models would not fit a 32-bit
+  // address space). Emitting nothing keeps multi-ABI Flutter builds working;
+  // the library is simply absent on armeabi-v7a / x86 devices.
+  if (os == OS.android &&
+      (arch == Architecture.arm || arch == Architecture.ia32) &&
+      options.source != LibrarySource.local) {
+    logger.warning(
+      'audio_cpp_dart: audio.cpp does not support 32-bit Android ($arch); '
+      'no native library is bundled for it.',
+    );
+    return;
+  }
+
   final List<File> libraries;
   switch (options.source) {
     case LibrarySource.local:
@@ -334,9 +347,7 @@ List<String> _targetArgs(BuildInput input, _CMakeTools tools) {
       final ndk = _androidNdk(code);
       final abi = switch (arch) {
         Architecture.arm64 => 'arm64-v8a',
-        Architecture.arm => 'armeabi-v7a',
         Architecture.x64 => 'x86_64',
-        Architecture.ia32 => 'x86',
         Architecture.riscv64 => 'riscv64',
         _ => throw UnsupportedError('Android $arch is not supported.'),
       };
@@ -346,8 +357,6 @@ List<String> _targetArgs(BuildInput input, _CMakeTools tools) {
         '-DANDROID_PLATFORM=android-${code.android.targetNdkApi}',
         '-DANDROID_STL=c++_static',
         '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON',
-        // llamafile's sgemm uses fp16 NEON intrinsics that armv7 lacks.
-        if (arch == Architecture.arm) '-DENGINE_ENABLE_LLAMAFILE=OFF',
         // Keeps the library self-contained: the NDK's OpenMP runtime would
         // otherwise have to be bundled as well. ggml uses its own threadpool.
         '-DENGINE_ENABLE_OPENMP=OFF',

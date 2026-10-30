@@ -18,7 +18,7 @@ generation and more, on ggml.
 | Linux x64 | upstream release (sha256-verified) | `cpu` |
 | Windows x64 | upstream release (sha256-verified) | `cpu` |
 | macOS arm64 / x64 | upstream release (sha256-verified) | `metal` / `cpu` |
-| Android (arm64, armv7, x64) | CMake build with the NDK Flutter provides | `cpu` |
+| Android (arm64-v8a, x86_64) | CMake build with the NDK Flutter provides | `cpu` |
 | iOS device / simulator | CMake build with Xcode | `metal` |
 | Linux arm64, Windows arm64 | CMake build on the host | `cpu` |
 
@@ -136,6 +136,9 @@ Notes:
   by the hook. `model_set: core` (framework models only, e.g. Silero VAD)
   builds much faster.
 - Android builds use `c++_static`, no OpenMP, and 16 KB page alignment.
+  audio.cpp is 64-bit only: for `armeabi-v7a` / `x86` the hook bundles
+  nothing, so restrict your app's ABIs (e.g. `abiFilters 'arm64-v8a',
+  'x86_64'`) or guard the feature on 32-bit devices.
 - Minimum OS versions come from audio.cpp: **macOS 13.3** and **iOS 16.3**
   (floating-point `std::to_chars`). Set your Flutter app's deployment target
   to at least that (`MACOSX_DEPLOYMENT_TARGET` / `IPHONEOS_DEPLOYMENT_TARGET`).

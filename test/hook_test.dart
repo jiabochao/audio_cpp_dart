@@ -77,6 +77,16 @@ void main() {
     );
   });
 
+  test('bundles nothing for 32-bit Android', () async {
+    await testCodeBuildHook(
+      mainMethod: hook.main,
+      targetOS: OS.android,
+      targetArchitecture: Architecture.arm,
+      userDefines: defines({}),
+      check: (input, output) => expect(output.assets.code, isEmpty),
+    );
+  });
+
   test('refuses prebuilt for targets without a release archive', () async {
     await expectLater(
       testCodeBuildHook(
