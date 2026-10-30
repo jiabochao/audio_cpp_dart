@@ -1,0 +1,6 @@
+include: package:lints/recommended.yaml
+
+analyzer:
+  exclude:
+    # A Flutter app with its own analysis context; analyzed in CI by flutter.
+    - example/flutter_app/**

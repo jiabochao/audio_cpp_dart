@@ -1,0 +1,35 @@
+name: audio_cpp_flutter_example
+description: Runs Silero VAD through audio_cpp_dart on every Flutter platform.
+publish_to: none
+version: 1.0.0
+
+environment:
+  sdk: ^3.10.0
+
+dependencies:
+  audio_cpp_dart:
+    path: ../..
+  flutter:
+    sdk: flutter
+  path_provider: ^2.1.5
+
+dev_dependencies:
+  flutter_lints: ^6.0.0
+  flutter_test:
+    sdk: flutter
+  integration_test:
+    sdk: flutter
+
+flutter:
+  uses-material-design: true
+  assets:
+    - assets/silero_vad/
+    - assets/sample_16k.wav
+
+hooks:
+  user_defines:
+    audio_cpp_dart:
+      # Only affects targets built from source (Android, iOS): the core set
+      # (framework models such as Silero VAD) builds in a fraction of the time.
+      # Remove it to compile every model family.
+      model_set: core

@@ -1,0 +1,16 @@
+# https://dart.dev/tools/private-files
+.dart_tool/
+build/
+pubspec.lock
+
+# Platform folders of the example app are generated in CI by `flutter create`.
+example/flutter_app/android/
+example/flutter_app/ios/
+example/flutter_app/linux/
+example/flutter_app/macos/
+example/flutter_app/windows/
+example/flutter_app/web/
+example/flutter_app/test/
+example/flutter_app/.metadata
+example/flutter_app/*.iml
+example/flutter_app/.idea/
