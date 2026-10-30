@@ -18,7 +18,7 @@ jobs:
     name: Analyze & bindings up to date
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dart-lang/setup-dart@v1
       - run: sudo apt-get update && sudo apt-get install -y libclang-dev
       - run: dart pub get
@@ -42,7 +42,7 @@ jobs:
           - { name: macos-arm64, os: macos-latest }
           - { name: macos-x64, os: macos-15-intel }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dart-lang/setup-dart@v1
       - run: dart pub get
       - run: dart test --reporter expanded
@@ -71,7 +71,7 @@ jobs:
           - { name: macos-arm64, os: macos-latest, source: build }
           - { name: windows-x64, os: windows-latest, source: build }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: dart-lang/setup-dart@v1
       - name: Configure hook user-defines
         shell: bash
@@ -100,7 +100,7 @@ jobs:
           - { device: windows, os: windows-latest }
           - { device: macos, os: macos-latest }
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -114,6 +114,10 @@ jobs:
         run: |
           flutter create --platforms=${{ matrix.device }} --project-name audio_cpp_flutter_example --org dev.audiocpp .
           rm -rf test
+          if [ "${{ matrix.device }}" = macos ]; then
+            sed -i '' 's/MACOSX_DEPLOYMENT_TARGET = [0-9.]*;/MACOSX_DEPLOYMENT_TARGET = 13.3;/g' macos/Runner.xcodeproj/project.pbxproj
+            sed -i '' "s/platform :osx, '[0-9.]*'/platform :osx, '13.3'/" macos/Podfile || true
+          fi
       - working-directory: ${{ env.APP }}
         run: flutter analyze
       - name: Integration test
@@ -131,8 +135,8 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 150
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-java@v4
+      - uses: actions/checkout@v5
+      - uses: actions/setup-java@v5
         with:
           distribution: temurin
           java-version: 17
@@ -173,7 +177,7 @@ jobs:
     runs-on: macos-latest
     timeout-minutes: 150
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: subosito/flutter-action@v2
         with:
           channel: stable
@@ -182,6 +186,9 @@ jobs:
         run: |
           flutter create --platforms=ios --project-name audio_cpp_flutter_example --org dev.audiocpp .
           rm -rf test
+          # audio.cpp needs iOS 16.3 (see README).
+          sed -i '' 's/IPHONEOS_DEPLOYMENT_TARGET = [0-9.]*;/IPHONEOS_DEPLOYMENT_TARGET = 16.3;/g' ios/Runner.xcodeproj/project.pbxproj
+          sed -i '' "s/# platform :ios, '[0-9.]*'/platform :ios, '16.3'/" ios/Podfile || true
       - name: Boot simulator
         id: sim
         run: |

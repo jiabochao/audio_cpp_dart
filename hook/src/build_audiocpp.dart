@@ -258,6 +258,15 @@ Future<List<File>> _sourceBuild(
 
   final tools = _CMakeTools.find(input);
   final buildDir = Directory.fromUri(input.outputDirectory.resolve('cmake/'));
+  // A CMake build tree is tied to its source directory.
+  final sourceMarker = File('${buildDir.path}/.audiocpp_source');
+  if (buildDir.existsSync() &&
+      (!sourceMarker.existsSync() ||
+          sourceMarker.readAsStringSync() != sourceDir.path)) {
+    buildDir.deleteSync(recursive: true);
+  }
+  buildDir.createSync(recursive: true);
+  sourceMarker.writeAsStringSync(sourceDir.path);
   final args = <String>[
     '-S',
     sourceDir.path,
@@ -337,6 +346,8 @@ List<String> _targetArgs(BuildInput input, _CMakeTools tools) {
         '-DANDROID_PLATFORM=android-${code.android.targetNdkApi}',
         '-DANDROID_STL=c++_static',
         '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON',
+        // llamafile's sgemm uses fp16 NEON intrinsics that armv7 lacks.
+        if (arch == Architecture.arm) '-DENGINE_ENABLE_LLAMAFILE=OFF',
         // Keeps the library self-contained: the NDK's OpenMP runtime would
         // otherwise have to be bundled as well. ggml uses its own threadpool.
         '-DENGINE_ENABLE_OPENMP=OFF',
@@ -346,9 +357,12 @@ List<String> _targetArgs(BuildInput input, _CMakeTools tools) {
       final simulator = code.iOS.targetSdk == IOSSdk.iPhoneSimulator;
       return [
         '-DCMAKE_SYSTEM_NAME=iOS',
+        // sentencepiece calls set_xcode_property(), which only its own iOS
+        // toolchain file defines.
+        '-DCMAKE_PROJECT_INCLUDE=${_iosShim(input).path}',
         '-DCMAKE_OSX_SYSROOT=${simulator ? 'iphonesimulator' : 'iphoneos'}',
         '-DCMAKE_OSX_ARCHITECTURES=${_appleArch(arch)}',
-        '-DCMAKE_OSX_DEPLOYMENT_TARGET=${code.iOS.targetVersion}',
+        '-DCMAKE_OSX_DEPLOYMENT_TARGET=${_appleTarget(code.iOS.targetVersion, 16)}',
         '-DCMAKE_INSTALL_NAME_DIR=@rpath',
         '-DCMAKE_BUILD_WITH_INSTALL_NAME_DIR=ON',
         '-DENGINE_ENABLE_OPENMP=OFF',
@@ -357,7 +371,7 @@ List<String> _targetArgs(BuildInput input, _CMakeTools tools) {
     case OS.macOS:
       return [
         '-DCMAKE_OSX_ARCHITECTURES=${_appleArch(arch)}',
-        '-DCMAKE_OSX_DEPLOYMENT_TARGET=${code.macOS.targetVersion}',
+        '-DCMAKE_OSX_DEPLOYMENT_TARGET=${_appleTarget(code.macOS.targetVersion, 13)}',
         '-DCMAKE_INSTALL_NAME_DIR=@rpath',
         '-DCMAKE_BUILD_WITH_INSTALL_NAME_DIR=ON',
         '-DENGINE_ENABLE_OPENMP=OFF',
@@ -382,6 +396,25 @@ List<String> _targetArgs(BuildInput input, _CMakeTools tools) {
       );
   }
 }
+
+/// audio.cpp uses floating-point `std::to_chars`, which Apple's libc++ ships
+/// from macOS 13.3 / iOS 16.3 (`major` 13 / 16). Older app targets are raised
+/// to that, so the library requires it at runtime.
+File _iosShim(BuildInput input) {
+  final file = File.fromUri(input.outputDirectory.resolve('ios_shim.cmake'));
+  file.parent.createSync(recursive: true);
+  file.writeAsStringSync('''
+if(NOT COMMAND set_xcode_property)
+  # Only matters for the Xcode generator, which this build does not use.
+  macro(set_xcode_property)
+  endmacro()
+endif()
+''');
+  return file;
+}
+
+String _appleTarget(int configured, int major) =>
+    configured > major ? '$configured.0' : '$major.3';
 
 String _appleArch(Architecture arch) => switch (arch) {
   Architecture.arm64 => 'arm64',
@@ -440,27 +473,38 @@ int _compareVersions(String a, String b) {
 }
 
 /// Downloads the upstream source tree for [audioCppCommit] once.
+///
+/// Paths are kept short on purpose: the deepest files in the tree
+/// (sentencepiece's bundled protobuf) exceed Windows' 260-character MAX_PATH
+/// below a long prefix.
 Future<Directory> _fetchSources(BuildInput input, Logger logger) async {
   final root = Directory.fromUri(
-    input.outputDirectoryShared.resolve('source/$audioCppCommit/'),
+    input.outputDirectoryShared.resolve(
+      'src-${audioCppCommit.substring(0, 12)}/',
+    ),
   );
+  final tree = Directory('${root.path}/tree');
   final done = File('${root.path}/.extracted');
-  final extracted = Directory('${root.path}/contents');
-  if (!done.existsSync()) {
-    root.createSync(recursive: true);
-    final tarball = File('${root.path}/source.tar.gz');
-    final url = Uri.parse(
-      'https://codeload.github.com/0xShug0/audio.cpp/tar.gz/$audioCppCommit',
-    );
-    logger.info('Downloading audio.cpp sources from $url');
-    await _download(url, tarball);
-    if (extracted.existsSync()) extracted.deleteSync(recursive: true);
-    await extractFileToDisk(tarball.path, extracted.path);
-    tarball.deleteSync();
-    done.writeAsStringSync(audioCppCommit);
+  if (done.existsSync()) return tree;
+
+  root.createSync(recursive: true);
+  final tarball = File('${root.path}/src.tar.gz');
+  final url = Uri.parse(
+    'https://codeload.github.com/0xShug0/audio.cpp/tar.gz/$audioCppCommit',
+  );
+  logger.info('Downloading audio.cpp sources from $url');
+  await _download(url, tarball);
+  final unpacked = Directory('${root.path}/x');
+  for (final dir in [unpacked, tree]) {
+    if (dir.existsSync()) dir.deleteSync(recursive: true);
   }
+  await extractFileToDisk(tarball.path, unpacked.path);
   // codeload archives contain a single `audio.cpp-<commit>/` directory.
-  return extracted.listSync().whereType<Directory>().single;
+  unpacked.listSync().whereType<Directory>().single.renameSync(tree.path);
+  unpacked.deleteSync(recursive: true);
+  tarball.deleteSync();
+  done.writeAsStringSync(audioCppCommit);
+  return tree;
 }
 
 final class _CMakeTools {

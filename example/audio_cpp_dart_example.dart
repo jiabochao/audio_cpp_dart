@@ -3,6 +3,9 @@
 //   dart run example/audio_cpp_dart_example.dart asr <model> <input.wav> [family]
 //   dart run example/audio_cpp_dart_example.dart tts <model> "<text>" <out.wav> [family] [voice-id]
 //
+// The backend defaults to CPU; set AUDIOCPP_BACKEND=metal|vulkan|cuda|best
+// to use a GPU.
+//
 // Try `vad test/fixtures/silero_vad test/fixtures/sample_16k.wav`, which
 // needs no download. Other models: see the audio.cpp model catalog.
 
@@ -27,16 +30,17 @@ Future<void> main(List<String> args) async {
   };
   final model = await registry.loadModelAsync(modelPath, family: family);
   print('loaded ${model.family}: ${model.description}');
-  final session = await model.createSessionAsync(task, backend: Backend.best);
+  final backend = Backend.values.byName(
+    Platform.environment['AUDIOCPP_BACKEND'] ?? 'cpu',
+  );
+  final session = await model.createSessionAsync(task, backend: backend);
 
   final audio = task == 'tts' ? null : Wav.read(input);
   final request = switch (audio) {
     null => Request(
       text: input,
       language: 'en-us',
-      options: {
-        'voice-id': ?rest.elementAtOrNull(2),
-      },
+      options: {'voice-id': ?rest.elementAtOrNull(2)},
     ),
     final audio => Request(audio: audio),
   };

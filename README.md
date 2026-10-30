@@ -35,7 +35,7 @@ Future<void> main() async {
     'models/Kokoro-82M-GGUF/kokoro-82m-q8_0.gguf',
     family: 'kokoro_tts',
   );
-  final session = await model.createSessionAsync('tts', backend: Backend.best);
+  final session = await model.createSessionAsync('tts', backend: Backend.best);  // or Backend.cpu
 
   final request = Request(text: 'Hello from Dart.', language: 'en-us')
     ..setOption('voice-id', 'af_heart');
@@ -136,6 +136,11 @@ Notes:
   by the hook. `model_set: core` (framework models only, e.g. Silero VAD)
   builds much faster.
 - Android builds use `c++_static`, no OpenMP, and 16 KB page alignment.
+- Minimum OS versions come from audio.cpp: **macOS 13.3** and **iOS 16.3**
+  (floating-point `std::to_chars`). Set your Flutter app's deployment target
+  to at least that (`MACOSX_DEPLOYMENT_TARGET` / `IPHONEOS_DEPLOYMENT_TARGET`).
+- GitHub's macOS runners expose a paravirtualized GPU on which ggml-metal
+  aborts on some ops; use `Backend.cpu` there.
 
 ## Development
 
