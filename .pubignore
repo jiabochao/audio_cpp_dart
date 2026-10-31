@@ -1,0 +1,21 @@
+# A .pubignore replaces .gitignore for this directory when publishing,
+# so the relevant .gitignore entries are repeated here.
+.dart_tool/
+build/
+pubspec.lock
+.github/
+
+# Generated platform folders of the example app.
+example/flutter_app/android/
+example/flutter_app/ios/
+example/flutter_app/linux/
+example/flutter_app/macos/
+example/flutter_app/windows/
+example/flutter_app/web/
+example/flutter_app/test/
+example/flutter_app/.metadata
+example/flutter_app/*.iml
+example/flutter_app/.idea/
+
+# Binary test fixtures (the example app keeps its own copy of the model/audio).
+test/fixtures/

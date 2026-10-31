@@ -2,7 +2,7 @@ import 'package:code_assets/code_assets.dart';
 import 'package:hooks/hooks.dart';
 import 'package:logging/logging.dart';
 
-import 'src/build_audiocpp.dart';
+import 'package:audio_cpp_dart/src/hook/build_audiocpp.dart';
 
 void main(List<String> args) async {
   await build(args, (input, output) async {
