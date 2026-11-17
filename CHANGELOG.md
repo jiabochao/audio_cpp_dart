@@ -4,6 +4,8 @@
   generated bindings, source commit and all prebuilt SHA-256 digests.
 - SenseVoice now returns words when `return_timestamps: true` is requested.
 - Expose the WebGPU and SYCL backend names.
+- Update build hooks for the Apple deployment version API in code_assets 2.2.
+- Migrate the Flutter example to the standalone Material UI package.
 - Normalize the Apache-2.0 license text so pub.dev recognizes the license.
 
 ## 0.1.0

@@ -371,7 +371,7 @@ List<String> _targetArgs(BuildInput input, _CMakeTools tools) {
         '-DCMAKE_PROJECT_INCLUDE=${_iosShim(input).path}',
         '-DCMAKE_OSX_SYSROOT=${simulator ? 'iphonesimulator' : 'iphoneos'}',
         '-DCMAKE_OSX_ARCHITECTURES=${_appleArch(arch)}',
-        '-DCMAKE_OSX_DEPLOYMENT_TARGET=${_appleTarget(code.iOS.targetVersion, 16)}',
+        '-DCMAKE_OSX_DEPLOYMENT_TARGET=${_appleTarget(code.iOS.deploymentVersion.major, 16)}',
         '-DCMAKE_INSTALL_NAME_DIR=@rpath',
         '-DCMAKE_BUILD_WITH_INSTALL_NAME_DIR=ON',
         '-DENGINE_ENABLE_OPENMP=OFF',
@@ -380,7 +380,7 @@ List<String> _targetArgs(BuildInput input, _CMakeTools tools) {
     case OS.macOS:
       return [
         '-DCMAKE_OSX_ARCHITECTURES=${_appleArch(arch)}',
-        '-DCMAKE_OSX_DEPLOYMENT_TARGET=${_appleTarget(code.macOS.targetVersion, 13)}',
+        '-DCMAKE_OSX_DEPLOYMENT_TARGET=${_appleTarget(code.macOS.deploymentVersion.major, 13)}',
         '-DCMAKE_INSTALL_NAME_DIR=@rpath',
         '-DCMAKE_BUILD_WITH_INSTALL_NAME_DIR=ON',
         '-DENGINE_ENABLE_OPENMP=OFF',
