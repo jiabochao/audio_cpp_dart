@@ -2,10 +2,10 @@ import 'package:code_assets/code_assets.dart';
 
 /// The audio.cpp release this package binds to. The vendored header in
 /// third_party/audiocpp/ is taken from the same release.
-const audioCppTag = 'v0.9.3';
+const audioCppTag = 'v0.9.5';
 
 /// Commit of [audioCppTag], used for source builds.
-const audioCppCommit = '41c1f8ffa0d13a1b7e366e30ea5fe5ab8d169d48';
+const audioCppCommit = '61c7838baf1f7f34769b5b7bd369c0d78edf9535';
 
 const _releaseBase =
     'https://github.com/0xShug0/audio.cpp/releases/download/$audioCppTag';
@@ -40,45 +40,45 @@ final Map<OS, Map<Architecture, Map<String, PrebuiltLibrary>>> prebuilts = {
       'cpu': const PrebuiltLibrary(
         ReleaseArchive(
           'audio-$audioCppTag-lib-ubuntu-x64-cpu.tar.gz',
-          'c21204a8839d596500b2338acd1c69e73a5e1737720e54b77f039c3239588fa8',
+          'd08ca1d0929d5e19ac4940f3eaf810ff3e99755c7b077f9e52373943afaef4cd',
         ),
       ),
       'cpu-portable': const PrebuiltLibrary(
         ReleaseArchive(
           'audio-$audioCppTag-lib-ubuntu-x64-cpu-portable.tar.gz',
-          '38c7b7875ebd748b4ece5c865812c7ad9c83ded37ef21172abc1c2b506d3fbb0',
+          'b60fab096d58eb07955409ce3b931de0b5830f5e89ad023dc9f8f1dfa74f1db2',
         ),
       ),
       'vulkan': const PrebuiltLibrary(
         ReleaseArchive(
           'audio-$audioCppTag-lib-ubuntu-x64-vulkan.tar.gz',
-          'b551153844eefba21dc9f72c81ab92df261a5d0aa4dd4c5138443631398f947c',
+          '928fe3a2e90a72de864f582f5c7c2c58db24466e6dc274fa4169a7c0375d86a2',
         ),
       ),
       'vulkan-portable': const PrebuiltLibrary(
         ReleaseArchive(
           'audio-$audioCppTag-lib-ubuntu-x64-vulkan-portable.tar.gz',
-          'e3aa9043cec0065da4f89997f68f9867e23c88f8c38be06dff1e4dd75170a7be',
+          'ff732d8daaf5770daa88acd4e2237c516fb9eaab81da69321245bb2669dff1dd',
         ),
       ),
       'cuda12.8': const PrebuiltLibrary(
         ReleaseArchive(
           'audio-$audioCppTag-lib-ubuntu-x64-cuda12.8.tar.gz',
-          '204d813c39318f592ba5fd33d7cd83b0b2c6fa6e32c5659d02e863b6449f7851',
+          'ba1708122290ce1a32ec6040063d2adc9a06ad2d22b9a25d37a8e34f57fc6d45',
         ),
         ReleaseArchive(
           'audio-$audioCppTag-cudart-ubuntu-x64-cuda12.8.tar.gz',
-          '2fcbaff8078b9eaed47a4a8e879c10dcf1f12fd31f2d52b29214fc9d45cfa198',
+          '732bf2f4b81760529996c076e9a255fa406a296a01c140ab290c62523e145bd0',
         ),
       ),
       'cuda13.3': const PrebuiltLibrary(
         ReleaseArchive(
           'audio-$audioCppTag-lib-ubuntu-x64-cuda13.3.tar.gz',
-          '3fcb8e25c95af27c888434c3e76f2a8d637efac2e0c898a87c7808fba59eb016',
+          '61091545078e7c0b1ee24f7b48ac3a7f32b7a32d30e419ea65abe35c788d7c4b',
         ),
         ReleaseArchive(
           'audio-$audioCppTag-cudart-ubuntu-x64-cuda13.3.tar.gz',
-          'fb4f995d760e60e159ea479379a1bf46f4844495f95913790d1b5d59427dbe44',
+          'd8c6bf84655310ae34702486ba8641bbe909b22a66605b2cb08fc24b6af84bf9',
         ),
       ),
     },
@@ -88,45 +88,45 @@ final Map<OS, Map<Architecture, Map<String, PrebuiltLibrary>>> prebuilts = {
       'cpu': const PrebuiltLibrary(
         ReleaseArchive(
           'audio-$audioCppTag-lib-windows-x64-cpu.zip',
-          'c7092b7cc4a82cf4625cadfdb31eff9d16d1d456bf6cc0b61588cfc14d505a6b',
+          'fef51c31705f524f51d47c858f93c7b184bd789eecfa916d5e689f139426171b',
         ),
       ),
       'cpu-portable': const PrebuiltLibrary(
         ReleaseArchive(
           'audio-$audioCppTag-lib-windows-x64-cpu-portable.zip',
-          'dcf2fe0090b9eae862bfe1fba5233b6c0049cbfc0ff26f296c4991d0faed2bf9',
+          '0cca326b8a58a81d4646531d7086c34c8e2e829246ef6015602156588d13857d',
         ),
       ),
       'vulkan': const PrebuiltLibrary(
         ReleaseArchive(
           'audio-$audioCppTag-lib-windows-x64-vulkan.zip',
-          '350e2f372a3911d7b21a617dd375b3479ecf13417e824d0004eb00565dd8e95c',
+          '33b16d1afa800c9f73bbcc3d230873296a51fee1dc79512afe0ad14c29fe2d62',
         ),
       ),
       'vulkan-portable': const PrebuiltLibrary(
         ReleaseArchive(
           'audio-$audioCppTag-lib-windows-x64-vulkan-portable.zip',
-          'b4e5a66e0bda38daabfd00c0b0273a23f9789766a777b5247203f1d1ba2c1572',
+          '44b9cb3c07449045da6607a074fd6d4c87f23073cfde285459383e9f1f062405',
         ),
       ),
       'cuda12.4': const PrebuiltLibrary(
         ReleaseArchive(
           'audio-$audioCppTag-lib-windows-x64-cuda12.4.zip',
-          'cedfdd9e28a6720a16514118d6674a562a830066b483f89d60051e6cf1eb5bd2',
+          '99ec5fed230f5babcd3d5b59fb8c0c47ca631fda034d16ba96bdb1cc8e4b34cf',
         ),
         ReleaseArchive(
           'audio-$audioCppTag-cudart-windows-x64-cuda12.4.zip',
-          '866a2bc12c4d887eb3b1b62f82f7a8fdd93391cb77ea02b63b0f360cfb3bb4d8',
+          'fa55dfaff1d4b5c6e8fac460d64f380b9df76cd46435f187c39b05700f623a7e',
         ),
       ),
       'cuda13.3': const PrebuiltLibrary(
         ReleaseArchive(
           'audio-$audioCppTag-lib-windows-x64-cuda13.3.zip',
-          '84c4c0d8c044b08a3d8bee2c35fe275e6ec95a3e9cc1a3cd81e0c77c43b39b80',
+          '7b7735581858082523ae216de12954f7aa4dd55061a3e5006769c87bc4a65ceb',
         ),
         ReleaseArchive(
           'audio-$audioCppTag-cudart-windows-x64-cuda13.3.zip',
-          '839eb20f684a8aab64895b1e466b32ce9b29dfc19dc1ce15b2ef35218512ac0a',
+          '8614040110cc5852b1dd2192e80344295500f4fa7f3199a51c737c2c7549c3dc',
         ),
       ),
     },
@@ -136,7 +136,7 @@ final Map<OS, Map<Architecture, Map<String, PrebuiltLibrary>>> prebuilts = {
       'metal': const PrebuiltLibrary(
         ReleaseArchive(
           'audio-$audioCppTag-lib-macos-arm64-metal.tar.gz',
-          '871d5e981be33abfc45aebd3cfe4858997ee298fd022a606fdb250ae1854495d',
+          '6c66ce9515c3e0bcf298186f6497881a124e97fd9c986afd25e244f43103bd48',
         ),
       ),
     },
@@ -146,7 +146,7 @@ final Map<OS, Map<Architecture, Map<String, PrebuiltLibrary>>> prebuilts = {
       'cpu': const PrebuiltLibrary(
         ReleaseArchive(
           'audio-$audioCppTag-lib-macos-x64-metal.tar.gz',
-          '7328284cd69b4e1953eca811b906850320e6001beb4eea28e69b54cfd5c07106',
+          'd92e6ecdae81c0f914efbea6d2a0a768963ed13610a82fd0dedd4c4f3a6a5277',
         ),
       ),
     },

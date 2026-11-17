@@ -22,7 +22,7 @@ generation and more, on ggml.
 | iOS device / simulator | CMake build with Xcode | `metal` |
 | Linux arm64, Windows arm64 | CMake build on the host | `cpu` |
 
-The bindings track audio.cpp **v0.9.3** (C ABI 0.2).
+The bindings track audio.cpp **v0.9.5** (C ABI 0.3).
 
 ## Usage
 
@@ -56,6 +56,37 @@ final result = await asr.runAsync(Request(audio: Wav.read('speech.wav')));
 print(result.text);
 for (final w in result.words) print('${w.word} ${w.startSample}');
 ```
+
+### Word timestamps and speaker turns
+
+SenseVoice in v0.9.5 supports opt-in word timestamps through the existing
+`TaskResult.words` API:
+
+```dart
+final request = Request(
+  audio: audio,
+  options: {'return_timestamps': 'true'},
+);
+try {
+  final transcript = await asr.runAsync(request);
+  for (final word in transcript.words) {
+    print('${word.word}: ${word.startSample}-${word.endSample}');
+  }
+} finally {
+  request.close();
+}
+```
+
+Diarization results expose the native `TaskResult.speakerTurns` data. In a
+streaming session, consume both the event returned by `pushAsync` and events
+from `drainEvents()`; their `result.speakerTurns` contain incremental turns.
+`finishStreamAsync()` returns the complete result. For `nemotron_3_diar`,
+incremental events contain completed turns, and finalization also includes
+any last open turn.
+
+Word-to-speaker alignment, overlap handling, and transcript grouping belong
+to the consuming application. The bindings expose the native results without
+choosing these policies.
 
 Streaming sessions are pull-based, as in the C API:
 

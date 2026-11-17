@@ -254,6 +254,8 @@ enum Backend {
   hip('hip'),
   vulkan('vulkan'),
   metal('metal'),
+  webgpu('webgpu'),
+  sycl('sycl'),
   best('best');
 
   final String nativeName;

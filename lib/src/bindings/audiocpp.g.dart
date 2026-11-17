@@ -73,6 +73,34 @@ external int audiocpp_event_voice_activity_count(
 @ffi.Native<ffi.Pointer<ffi.Char> Function()>(isLeaf: true)
 external ffi.Pointer<ffi.Char> audiocpp_last_error();
 
+@ffi.Native<
+  ffi.Void Function(
+    ffi.Pointer<
+      ffi.NativeFunction<
+        ffi.Void Function(
+          ffi.UnsignedInt level,
+          ffi.Pointer<ffi.Char> text,
+          ffi.Pointer<ffi.Void> user_data,
+        )
+      >
+    >,
+    ffi.Pointer<ffi.Void>,
+  )
+>()
+external void audiocpp_log_set(
+  ffi.Pointer<
+    ffi.NativeFunction<
+      ffi.Void Function(
+        ffi.UnsignedInt level,
+        ffi.Pointer<ffi.Char> text,
+        ffi.Pointer<ffi.Void> user_data,
+      )
+    >
+  >
+  log_callback,
+  ffi.Pointer<ffi.Void> user_data,
+);
+
 @ffi.Native<ffi.Pointer<ffi.Char> Function(ffi.Pointer<audiocpp_model>)>(
   isLeaf: true,
 )
@@ -1044,6 +1072,49 @@ audiocpp_status audiocpp_session_create(
   );
 }
 
+@ffi.Native<
+  ffi.UnsignedInt Function(
+    ffi.Pointer<audiocpp_model>,
+    ffi.Pointer<ffi.Char>,
+    ffi.Pointer<ffi.Char>,
+    ffi.Pointer<audiocpp_backend_config>,
+    ffi.Pointer<ffi.Char>,
+    ffi.Pointer<audiocpp_options>,
+    ffi.Pointer<ffi.Pointer<audiocpp_session>>,
+  )
+>(symbol: 'audiocpp_session_create_with_impl')
+external int _audiocpp_session_create_with_impl(
+  ffi.Pointer<audiocpp_model> model,
+  ffi.Pointer<ffi.Char> task,
+  ffi.Pointer<ffi.Char> mode,
+  ffi.Pointer<audiocpp_backend_config> backend_config,
+  ffi.Pointer<ffi.Char> impl,
+  ffi.Pointer<audiocpp_options> options,
+  ffi.Pointer<ffi.Pointer<audiocpp_session>> out_session,
+);
+
+audiocpp_status audiocpp_session_create_with_impl(
+  ffi.Pointer<audiocpp_model> model,
+  ffi.Pointer<ffi.Char> task,
+  ffi.Pointer<ffi.Char> mode,
+  ffi.Pointer<audiocpp_backend_config> backend_config,
+  ffi.Pointer<ffi.Char> impl,
+  ffi.Pointer<audiocpp_options> options,
+  ffi.Pointer<ffi.Pointer<audiocpp_session>> out_session,
+) {
+  return audiocpp_status.fromValue(
+    _audiocpp_session_create_with_impl(
+      model,
+      task,
+      mode,
+      backend_config,
+      impl,
+      options,
+      out_session,
+    ),
+  );
+}
+
 @ffi.Native<ffi.Pointer<ffi.Char> Function(ffi.Pointer<audiocpp_session>)>(
   isLeaf: true,
 )
@@ -1298,7 +1369,7 @@ class _SymbolAddresses {
 
 const int AUDIOCPP_ABI_VERSION_MAJOR = 0;
 
-const int AUDIOCPP_ABI_VERSION_MINOR = 2;
+const int AUDIOCPP_ABI_VERSION_MINOR = 3;
 
 const int AUDIOCPP_ABI_VERSION_PATCH = 0;
 
@@ -1353,6 +1424,28 @@ final class audiocpp_backend_config extends ffi.Struct {
 }
 
 final class audiocpp_event extends ffi.Opaque {}
+
+enum audiocpp_log_level {
+  AUDIOCPP_LOG_LEVEL_NONE(0),
+  AUDIOCPP_LOG_LEVEL_DEBUG(1),
+  AUDIOCPP_LOG_LEVEL_INFO(2),
+  AUDIOCPP_LOG_LEVEL_WARN(3),
+  AUDIOCPP_LOG_LEVEL_ERROR(4),
+  AUDIOCPP_LOG_LEVEL_CONT(5);
+
+  final int value;
+  const audiocpp_log_level(this.value);
+
+  static audiocpp_log_level fromValue(int value) => switch (value) {
+    0 => AUDIOCPP_LOG_LEVEL_NONE,
+    1 => AUDIOCPP_LOG_LEVEL_DEBUG,
+    2 => AUDIOCPP_LOG_LEVEL_INFO,
+    3 => AUDIOCPP_LOG_LEVEL_WARN,
+    4 => AUDIOCPP_LOG_LEVEL_ERROR,
+    5 => AUDIOCPP_LOG_LEVEL_CONT,
+    _ => throw ArgumentError('Unknown value for audiocpp_log_level: $value'),
+  };
+}
 
 final class audiocpp_model extends ffi.Opaque {}
 

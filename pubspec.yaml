@@ -2,7 +2,7 @@ name: audio_cpp_dart
 description: >-
   Dart FFI bindings for audio.cpp (TTS, ASR, VAD, diarization, separation and
   more on ggml), shipped as a native asset through build hooks.
-version: 0.1.0
+version: 0.2.0
 repository: https://github.com/jiabochao/audio_cpp_dart
 issue_tracker: https://github.com/jiabochao/audio_cpp_dart/issues
 topics:

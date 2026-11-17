@@ -25,7 +25,7 @@ abstract final class AudioCpp {
     return audiocpp_abi_version();
   }
 
-  /// audio.cpp's own version string, e.g. `v0.9.3`.
+  /// audio.cpp's own version string, e.g. `v0.9.5`.
   static String get buildVersion {
     ensureInitialized();
     return audiocpp_build_version().toDartString();
